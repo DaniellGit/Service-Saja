@@ -26,12 +26,16 @@ export default async function SettingsPage() {
         <article className="soft-card">
           <HeartHandshake className="mb-3 text-clay" size={24} />
           <h2 className="font-bold">Mission</h2>
-          <p className="mt-1 text-sm text-ink/65 dark:text-white/65">Make service tracking for families and friends. All made with ♥ -Daniel</p>
+          <p className="mt-1 text-sm text-ink/65 dark:text-white/65">
+            This web app is here to make your vehicle-care job easier, because life is already miserable enough sometimes. Made with care -Daniel.
+          </p>
         </article>
         <article className="soft-card">
           <ShieldCheck className="mb-3 text-moss dark:text-sage" size={24} />
-          <h2 className="font-bold">Promise</h2>
-          <p className="mt-1 text-sm text-ink/65 dark:text-white/65">Clear reminders, friendly forms, and less guessing about vehicle care.</p>
+          <h2 className="font-bold">Why This App?</h2>
+          <p className="mt-1 text-sm text-ink/65 dark:text-white/65">
+            So you do not need to remember every oil change, tyre check, or workshop cost by yourself. Service Saja keeps it simple and reminds you when it matters.
+          </p>
         </article>
       </section>
       <form className="soft-card space-y-4">

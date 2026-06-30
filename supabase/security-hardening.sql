@@ -3,7 +3,7 @@ alter table public.service_intervals
 
 alter table public.service_intervals
   add column if not exists custom_service_key text
-  generated always as (coalesce(nullif(trim(custom_service_name), ''), '')) stored;
+  generated always as (lower(coalesce(nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), ''), ''))) stored;
 
 alter table public.service_intervals
   drop constraint if exists service_intervals_vehicle_id_service_type_key;
@@ -89,7 +89,7 @@ returns trigger as $$
 declare
   interval_km integer := 5000;
   interval_months integer := 6;
-  service_key text := coalesce(nullif(trim(new.custom_service_name), ''), '');
+  service_key text := lower(coalesce(nullif(regexp_replace(trim(new.custom_service_name), '\s+', ' ', 'g'), ''), ''));
 begin
   if not exists (
     select 1 from public.vehicles

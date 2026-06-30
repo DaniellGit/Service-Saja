@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Wrench } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { AuthForm } from "@/components/AuthForm";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
@@ -8,14 +9,14 @@ export default function LandingPage() {
     <main className="page-shell grid items-center lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
       <section className="py-8">
         <div className="secondary-button mb-8 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold">
-          <Wrench size={18} />
+          <Image src="/servicesaja.png" alt="Service Saja logo" width={24} height={24} className="rounded-md" priority />
           Service Saja
         </div>
         <h1 className="font-display text-5xl font-semibold leading-tight text-ink dark:text-linen sm:text-6xl">
-          Simple care records for every vehicle.
+          Your personal vehicle service tracker.
         </h1>
         <p className="theme-muted mt-5 max-w-xl text-lg leading-8">
-          Track motorcycle and car services, reminders, mileage, and costs in one calm place built for real life.
+          Service Saja keeps your motorcycle and car records, reminders, mileage, and costs in one calm place because life is already busy enough.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link href="/dashboard" className="large-button bg-moss text-white">
@@ -34,7 +35,7 @@ export default function LandingPage() {
           <div>
             <h2 className="text-xl font-bold">Login / Signup</h2>
             <p className="theme-muted text-sm">
-              {isSupabaseConfigured ? "Supabase is configured." : "Demo mode is active."}
+              {isSupabaseConfigured ? "Save your own vehicles and reminders." : "Demo mode is active."}
             </p>
           </div>
         </div>

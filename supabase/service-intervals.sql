@@ -10,7 +10,7 @@ create table if not exists public.service_intervals (
   vehicle_id uuid not null references public.vehicles(id) on delete cascade,
   service_type service_type not null,
   custom_service_name text,
-  custom_service_key text generated always as (coalesce(nullif(trim(custom_service_name), ''), '')) stored,
+  custom_service_key text generated always as (lower(coalesce(nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), ''), ''))) stored,
   interval_mileage integer not null check (interval_mileage > 0),
   interval_months integer not null check (interval_months > 0),
   created_at timestamptz not null default now(),
@@ -23,7 +23,7 @@ alter table public.service_intervals
 
 alter table public.service_intervals
   add column if not exists custom_service_key text
-  generated always as (coalesce(nullif(trim(custom_service_name), ''), '')) stored;
+  generated always as (lower(coalesce(nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), ''), ''))) stored;
 
 alter table public.service_intervals
   drop constraint if exists service_intervals_vehicle_id_service_type_key;
@@ -76,7 +76,7 @@ returns trigger as $$
 declare
   interval_km integer := 5000;
   interval_months integer := 6;
-  service_key text := coalesce(nullif(trim(new.custom_service_name), ''), '');
+  service_key text := lower(coalesce(nullif(regexp_replace(trim(new.custom_service_name), '\s+', ' ', 'g'), ''), ''));
 begin
   if not exists (
     select 1 from public.vehicles

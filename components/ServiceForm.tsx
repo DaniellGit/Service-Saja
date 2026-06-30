@@ -1,16 +1,22 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, Gauge, ReceiptText, Save, Wrench } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { serviceTypes, type ServiceType, type Vehicle } from "@/lib/types";
+import { normalizeCustomServiceName, normalizeShopName } from "@/lib/utils";
 
 export function ServiceForm({ userId, vehicles }: { userId: string | null; vehicles: Vehicle[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefilledVehicleId = searchParams.get("vehicleId") ?? vehicles[0]?.id;
+  const prefilledServiceType = (searchParams.get("serviceType") ?? "engine oil") as ServiceType;
+  const prefilledCustomServiceName = searchParams.get("customServiceName") ?? "";
+  const prefilledReminderId = searchParams.get("reminderId");
   const [message, setMessage] = useState("");
-  const [serviceType, setServiceType] = useState<ServiceType>("engine oil");
-  const [customServiceName, setCustomServiceName] = useState("");
+  const [serviceType, setServiceType] = useState<ServiceType>(prefilledServiceType);
+  const [customServiceName, setCustomServiceName] = useState(prefilledCustomServiceName);
   const [isPending, startTransition] = useTransition();
   const today = new Date().toISOString().slice(0, 10);
 
@@ -27,21 +33,24 @@ export function ServiceForm({ userId, vehicles }: { userId: string | null; vehic
       return;
     }
 
+    const cleanCustomServiceName = normalizeCustomServiceName(String(formData.get("customServiceName") ?? ""));
+    const cleanShopName = normalizeShopName(String(formData.get("shopName") ?? ""));
+
     const payload = {
       user_id: userId,
       vehicle_id: String(formData.get("vehicleId") ?? ""),
       service_date: String(formData.get("date") ?? today),
       mileage: Number(formData.get("mileage") ?? 0),
       service_type: String(formData.get("serviceType") ?? "engine oil") as ServiceType,
-      custom_service_name: String(formData.get("customServiceName") ?? "").trim(),
+      custom_service_name: cleanCustomServiceName,
       cost: Number(formData.get("cost") ?? 0),
-      shop_name: String(formData.get("shopName") ?? ""),
-      notes: String(formData.get("notes") ?? "")
+      shop_name: cleanShopName,
+      notes: String(formData.get("notes") ?? "").trim()
     };
 
     startTransition(async () => {
       if (payload.service_type === "other") {
-        const cleanCustomName = payload.custom_service_name.trim();
+        const cleanCustomName = payload.custom_service_name;
 
         if (!cleanCustomName) {
           setMessage("Please name this custom service.");
@@ -73,6 +82,16 @@ export function ServiceForm({ userId, vehicles }: { userId: string | null; vehic
         return;
       }
 
+      if (prefilledReminderId) {
+        await client
+          .from("reminders")
+          .update({
+            status: "completed",
+            completed_at: new Date().toISOString()
+          })
+          .eq("id", prefilledReminderId);
+      }
+
       router.push("/history");
       router.refresh();
     });
@@ -94,9 +113,14 @@ export function ServiceForm({ userId, vehicles }: { userId: string | null; vehic
           <p className="text-sm text-ink/60 dark:text-white/60">A clean record today prevents guessing later.</p>
         </div>
       </div>
+      {prefilledReminderId && (
+        <div className="rounded-2xl border border-moss/20 bg-moss/10 p-4 text-sm font-semibold text-moss dark:border-sage/25 dark:bg-sage/10 dark:text-sage">
+          Opened from a reminder. Just add today&apos;s mileage, cost, and shop — Service Saja will complete the old alert after saving.
+        </div>
+      )}
       <label className="block">
         <span className="mb-2 block font-semibold">Vehicle</span>
-        <select className="field" name="vehicleId" defaultValue={vehicles[0]?.id}>
+        <select className="field" name="vehicleId" defaultValue={prefilledVehicleId}>
           {vehicles.map((vehicle) => (
             <option key={vehicle.id} value={vehicle.id}>
               {vehicle.name} - {vehicle.plateNumber}

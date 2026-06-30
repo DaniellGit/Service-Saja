@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { CompleteReminderButton } from "@/components/CompleteReminderButton";
 import { PageFrame } from "@/components/PageFrame";
 import { getAppData } from "@/lib/data";
 import { formatDate, formatMileage, getReminderTone, getServiceLabel, getVehicleName } from "@/lib/utils";
@@ -14,7 +16,15 @@ export default async function RemindersPage() {
         {isDemo && <p className="mt-2 text-sm font-semibold text-clay">Demo reminders shown. Login to see your real reminders.</p>}
       </section>
       <div className="grid gap-3">
-        {reminders.map((reminder) => (
+        {reminders.map((reminder) => {
+          const serviceParams = new URLSearchParams({
+            vehicleId: reminder.vehicleId,
+            serviceType: reminder.serviceType,
+            customServiceName: reminder.customServiceName,
+            reminderId: reminder.id
+          });
+
+          return (
           <article key={reminder.id} className={`relative overflow-hidden rounded-2xl border p-4 shadow-soft ${getReminderTone(reminder.status)}`}>
             <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-white/30 blur-xl" />
             <div className="flex items-start justify-between gap-3">
@@ -30,11 +40,28 @@ export default async function RemindersPage() {
               <span className="rounded-lg bg-white/70 px-3 py-1 text-sm font-bold capitalize dark:bg-white/10">{reminder.status}</span>
             </div>
             <p className="mt-3 text-sm">Due at {formatMileage(reminder.dueMileage)} km or {formatDate(reminder.dueDate)}</p>
-            <button className="large-button secondary-button mt-4" type="button">
-              <CheckCircle2 size={19} /> Mark Completed
-            </button>
+            {isDemo ? (
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <Link href={`/service/new?${serviceParams.toString()}`} className="large-button bg-moss text-white">
+                  I Serviced This
+                </Link>
+                <button className="large-button secondary-button" type="button">
+                  <CheckCircle2 size={19} /> Demo Only
+                </button>
+              </div>
+            ) : reminder.status === "completed" ? (
+              <p className="mt-4 text-sm font-bold text-emerald-700 dark:text-emerald-200">Completed already</p>
+            ) : (
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <Link href={`/service/new?${serviceParams.toString()}`} className="large-button bg-moss text-white">
+                  I Serviced This
+                </Link>
+                <CompleteReminderButton id={reminder.id} />
+              </div>
+            )}
           </article>
-        ))}
+          );
+        })}
         {reminders.length === 0 && <div className="soft-card theme-muted text-center">No reminders yet.</div>}
       </div>
     </PageFrame>

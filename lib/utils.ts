@@ -1,6 +1,35 @@
 import type { Reminder, ServiceRecord, Vehicle } from "@/lib/types";
 import type { ServiceType } from "@/lib/types";
 
+const alwaysUppercaseWords = new Set(["abs", "bmw", "cvt", "jpj", "smc"]);
+
+export function cleanText(value: string) {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+export function normalizeSearchKey(value: string) {
+  return cleanText(value).toLowerCase();
+}
+
+export function toTitleCase(value: string) {
+  return cleanText(value)
+    .toLowerCase()
+    .split(" ")
+    .map((word) => {
+      if (alwaysUppercaseWords.has(word)) return word.toUpperCase();
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+export function normalizeCustomServiceName(value: string) {
+  return toTitleCase(value).slice(0, 40);
+}
+
+export function normalizeShopName(value: string) {
+  return toTitleCase(value).slice(0, 80);
+}
+
 export function formatMileage(mileage: number) {
   return new Intl.NumberFormat("en-MY").format(mileage);
 }

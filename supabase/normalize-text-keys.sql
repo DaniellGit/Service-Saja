@@ -1,25 +1,34 @@
-alter table public.service_records
-  add column if not exists custom_service_name text;
-
-alter table public.reminders
-  add column if not exists custom_service_name text;
-
 alter table public.service_intervals
-  add column if not exists custom_service_name text;
-
-alter table public.service_intervals
-  add column if not exists custom_service_key text
-  generated always as (lower(coalesce(nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), ''), ''))) stored;
+  drop constraint if exists service_intervals_vehicle_type_custom_key;
 
 alter table public.service_intervals
   drop constraint if exists service_intervals_vehicle_id_service_type_key;
 
 alter table public.service_intervals
-  drop constraint if exists service_intervals_vehicle_type_custom_key;
+  drop column if exists custom_service_key;
+
+alter table public.service_intervals
+  add column custom_service_key text
+  generated always as (lower(coalesce(nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), ''), ''))) stored;
 
 alter table public.service_intervals
   add constraint service_intervals_vehicle_type_custom_key
   unique (vehicle_id, service_type, custom_service_key);
+
+update public.service_records
+set
+  custom_service_name = nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), ''),
+  shop_name = nullif(regexp_replace(trim(shop_name), '\s+', ' ', 'g'), '')
+where custom_service_name is not null
+or shop_name is not null;
+
+update public.reminders
+set custom_service_name = nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), '')
+where custom_service_name is not null;
+
+update public.service_intervals
+set custom_service_name = nullif(regexp_replace(trim(custom_service_name), '\s+', ' ', 'g'), '')
+where custom_service_name is not null;
 
 create or replace function public.create_next_service_reminder()
 returns trigger as $$
@@ -62,7 +71,7 @@ begin
     new.user_id,
     new.vehicle_id,
     new.service_type,
-    nullif(trim(coalesce(new.custom_service_name, '')), ''),
+    nullif(regexp_replace(trim(coalesce(new.custom_service_name, '')), '\s+', ' ', 'g'), ''),
     new.mileage + interval_km,
     new.service_date + make_interval(months => interval_months),
     'due soon'
