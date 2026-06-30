@@ -1,4 +1,5 @@
 import type { Reminder, ServiceRecord, Vehicle } from "@/lib/types";
+import type { ServiceType } from "@/lib/types";
 
 export function formatMileage(mileage: number) {
   return new Intl.NumberFormat("en-MY").format(mileage);
@@ -20,6 +21,14 @@ export function formatDate(date: string) {
     month: "long",
     year: "numeric"
   }).format(new Date(`${date}T00:00:00`));
+}
+
+export function getServiceLabel(serviceType: ServiceType, customServiceName?: string) {
+  if (serviceType === "other" && customServiceName?.trim()) {
+    return customServiceName.trim();
+  }
+
+  return serviceType;
 }
 
 export function getVehicleName(vehicles: Vehicle[], vehicleId: string) {

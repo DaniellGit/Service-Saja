@@ -5,10 +5,12 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
   DatabaseReminder,
   DatabaseServiceRecord,
+  DatabaseServiceInterval,
   DatabaseVehicle,
   Profile,
   Reminder,
   ServiceRecord,
+  ServiceInterval,
   Vehicle
 } from "@/lib/types";
 
@@ -17,6 +19,7 @@ export type AppData = {
   vehicles: Vehicle[];
   records: ServiceRecord[];
   reminders: Reminder[];
+  intervals: ServiceInterval[];
   isDemo: boolean;
   userId: string | null;
 };
@@ -42,6 +45,7 @@ export function mapServiceRecord(row: DatabaseServiceRecord): ServiceRecord {
     date: row.service_date,
     mileage: row.mileage,
     serviceType: row.service_type,
+    customServiceName: row.custom_service_name ?? "",
     cost: Number(row.cost),
     shopName: row.shop_name ?? "",
     notes: row.notes ?? "",
@@ -54,9 +58,22 @@ export function mapReminder(row: DatabaseReminder): Reminder {
     id: row.id,
     vehicleId: row.vehicle_id,
     serviceType: row.service_type,
+    customServiceName: row.custom_service_name ?? "",
     dueMileage: row.due_mileage ?? 0,
     dueDate: row.due_date ?? "No date",
     status: row.status
+  };
+}
+
+export function mapServiceInterval(row: DatabaseServiceInterval): ServiceInterval {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    vehicleId: row.vehicle_id,
+    serviceType: row.service_type,
+    customServiceName: row.custom_service_name ?? "",
+    intervalMileage: row.interval_mileage,
+    intervalMonths: row.interval_months
   };
 }
 
@@ -93,7 +110,7 @@ export async function getAppData(): Promise<AppData> {
     return getDemoData();
   }
 
-  const [profileResult, vehiclesResult, recordsResult, remindersResult] = await Promise.all([
+  const [profileResult, vehiclesResult, recordsResult, remindersResult, intervalsResult] = await Promise.all([
     supabase.from("profiles").select("id, full_name, email").eq("id", user.id).maybeSingle(),
     supabase
       .from("vehicles")
@@ -102,14 +119,18 @@ export async function getAppData(): Promise<AppData> {
       .order("created_at", { ascending: false }),
     supabase
       .from("service_records")
-      .select("id, user_id, vehicle_id, service_date, mileage, service_type, cost, shop_name, notes, created_at")
+      .select("id, user_id, vehicle_id, service_date, mileage, service_type, custom_service_name, cost, shop_name, notes, created_at")
       .eq("user_id", user.id)
       .order("service_date", { ascending: false }),
     supabase
       .from("reminders")
-      .select("id, user_id, vehicle_id, service_type, due_mileage, due_date, status")
+      .select("id, user_id, vehicle_id, service_type, custom_service_name, due_mileage, due_date, status")
       .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("service_intervals")
+      .select("id, user_id, vehicle_id, service_type, custom_service_name, interval_mileage, interval_months")
+      .eq("user_id", user.id)
   ]);
 
   return {
@@ -121,6 +142,7 @@ export async function getAppData(): Promise<AppData> {
     vehicles: ((vehiclesResult.data ?? []) as DatabaseVehicle[]).map(mapVehicle),
     records: ((recordsResult.data ?? []) as DatabaseServiceRecord[]).map(mapServiceRecord),
     reminders: ((remindersResult.data ?? []) as DatabaseReminder[]).map(mapReminder),
+    intervals: ((intervalsResult.data ?? []) as DatabaseServiceInterval[]).map(mapServiceInterval),
     isDemo: false,
     userId: user.id
   };
@@ -132,6 +154,7 @@ function getDemoData(): AppData {
     vehicles: mockVehicles,
     records: mockServiceRecords,
     reminders: mockReminders,
+    intervals: [],
     isDemo: true,
     userId: null
   };

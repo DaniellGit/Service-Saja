@@ -1,7 +1,7 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { PageFrame } from "@/components/PageFrame";
 import { getAppData } from "@/lib/data";
-import { formatDate, formatMileage, getReminderTone, getVehicleName } from "@/lib/utils";
+import { formatDate, formatMileage, getReminderTone, getServiceLabel, getVehicleName } from "@/lib/utils";
 
 export default async function RemindersPage() {
   const { reminders, vehicles, isDemo } = await getAppData();
@@ -24,7 +24,7 @@ export default async function RemindersPage() {
                 </span>
                 <div>
                 <p className="text-sm font-bold">{getVehicleName(vehicles, reminder.vehicleId)}</p>
-                <h2 className="text-lg font-bold capitalize">{reminder.serviceType}</h2>
+                <h2 className="text-lg font-bold capitalize">{getServiceLabel(reminder.serviceType, reminder.customServiceName)}</h2>
                 </div>
               </div>
               <span className="rounded-lg bg-white/70 px-3 py-1 text-sm font-bold capitalize dark:bg-white/10">{reminder.status}</span>

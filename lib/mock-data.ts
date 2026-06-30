@@ -37,6 +37,7 @@ export const mockServiceRecords: ServiceRecord[] = [
     date: "2026-06-18",
     mileage: 28000,
     serviceType: "engine oil",
+    customServiceName: "",
     cost: 48,
     shopName: "Azman Motor",
     notes: "Changed oil and checked brake pads."
@@ -48,6 +49,7 @@ export const mockServiceRecords: ServiceRecord[] = [
     date: "2026-05-22",
     mileage: 26500,
     serviceType: "CVT belt",
+    customServiceName: "",
     cost: 180,
     shopName: "Azman Motor",
     notes: "Replaced belt and rollers."
@@ -59,6 +61,7 @@ export const mockServiceRecords: ServiceRecord[] = [
     date: "2026-06-05",
     mileage: 61500,
     serviceType: "engine oil",
+    customServiceName: "",
     cost: 165,
     shopName: "Hafiz Auto Care",
     notes: "Full oil service with filter."
@@ -70,6 +73,7 @@ export const mockReminders: Reminder[] = [
     id: "rem-1",
     vehicleId: "veh-1",
     serviceType: "engine oil",
+    customServiceName: "",
     dueMileage: 30000,
     dueDate: "2026-07-15",
     status: "due soon"
@@ -78,6 +82,7 @@ export const mockReminders: Reminder[] = [
     id: "rem-2",
     vehicleId: "veh-2",
     serviceType: "tire",
+    customServiceName: "",
     dueMileage: 62000,
     dueDate: "2026-06-25",
     status: "overdue"
@@ -86,6 +91,7 @@ export const mockReminders: Reminder[] = [
     id: "rem-3",
     vehicleId: "veh-1",
     serviceType: "brake pad",
+    customServiceName: "",
     dueMileage: 27500,
     dueDate: "2026-06-12",
     status: "completed"

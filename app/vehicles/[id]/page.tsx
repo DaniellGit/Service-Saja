@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { Pencil, PlusCircle, SlidersHorizontal, Trash2 } from "lucide-react";
 import { DeleteButton } from "@/components/DeleteButton";
 import { MileageUpdateForm } from "@/components/MileageUpdateForm";
 import { PageFrame } from "@/components/PageFrame";
 import { getAppData } from "@/lib/data";
-import { formatCurrency, formatDate, formatMileage, getReminderTone } from "@/lib/utils";
+import { formatCurrency, formatDate, formatMileage, getReminderTone, getServiceLabel } from "@/lib/utils";
 
 export default async function VehicleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -44,6 +44,9 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
       <Link href="/service/new" className="large-button mb-5 w-full bg-clay text-white">
         <PlusCircle size={22} /> Add Service for This Vehicle
       </Link>
+      <Link href={`/vehicles/${vehicle.id}/schedule`} className="large-button secondary-button mb-5 w-full">
+        <SlidersHorizontal size={22} /> Service Schedule
+      </Link>
       <section className="grid gap-5 lg:grid-cols-2">
         <div>
           {!isDemo && <div className="mb-5"><MileageUpdateForm vehicleId={vehicle.id} currentMileage={vehicle.currentMileage} /></div>}
@@ -53,7 +56,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
               <article key={record.id} className="soft-card">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-bold capitalize">{record.serviceType}</p>
+                    <p className="font-bold capitalize">{getServiceLabel(record.serviceType, record.customServiceName)}</p>
                     <p className="theme-muted text-sm">{formatDate(record.date)} - {formatMileage(record.mileage)} km</p>
                   </div>
                   <p className="font-bold text-moss">{formatCurrency(record.cost)}</p>
@@ -70,7 +73,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
             {reminders.map((reminder) => (
               <article key={reminder.id} className={`rounded-lg border p-4 ${getReminderTone(reminder.status)}`}>
                 <div className="flex items-start justify-between gap-3">
-                  <p className="font-bold capitalize">{reminder.serviceType}</p>
+                  <p className="font-bold capitalize">{getServiceLabel(reminder.serviceType, reminder.customServiceName)}</p>
                   <p className="text-sm font-bold capitalize">{reminder.status}</p>
                 </div>
                 <p className="mt-2 text-sm">Due at {formatMileage(reminder.dueMileage)} km or {formatDate(reminder.dueDate)}</p>

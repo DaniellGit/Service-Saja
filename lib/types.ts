@@ -39,6 +39,7 @@ export type ServiceRecord = {
   date: string;
   mileage: number;
   serviceType: ServiceType;
+  customServiceName: string;
   cost: number;
   shopName: string;
   notes: string;
@@ -49,9 +50,20 @@ export type Reminder = {
   id: string;
   vehicleId: string;
   serviceType: ServiceType;
+  customServiceName: string;
   dueMileage: number;
   dueDate: string;
   status: ReminderStatus;
+};
+
+export type ServiceInterval = {
+  id: string;
+  userId: string;
+  vehicleId: string;
+  serviceType: ServiceType;
+  customServiceName: string;
+  intervalMileage: number;
+  intervalMonths: number;
 };
 
 export type DatabaseVehicle = {
@@ -72,6 +84,7 @@ export type DatabaseServiceRecord = {
   service_date: string;
   mileage: number;
   service_type: ServiceType;
+  custom_service_name: string | null;
   cost: number;
   shop_name: string | null;
   notes: string | null;
@@ -83,9 +96,20 @@ export type DatabaseReminder = {
   user_id: string;
   vehicle_id: string;
   service_type: ServiceType;
+  custom_service_name: string | null;
   due_mileage: number | null;
   due_date: string | null;
   status: ReminderStatus;
+};
+
+export type DatabaseServiceInterval = {
+  id: string;
+  user_id: string;
+  vehicle_id: string;
+  service_type: ServiceType;
+  custom_service_name: string | null;
+  interval_mileage: number;
+  interval_months: number;
 };
 
 export const serviceTypes: ServiceType[] = [

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Clock3 } from "lucide-react";
 import type { Reminder, Vehicle } from "@/lib/types";
-import { formatDate, formatMileage, getVehicleName } from "@/lib/utils";
+import { formatDate, formatMileage, getServiceLabel, getVehicleName } from "@/lib/utils";
 
 export function ServiceAlertCard({ reminders, vehicles }: { reminders: Reminder[]; vehicles: Vehicle[] }) {
   const overdue = reminders.filter((reminder) => reminder.status === "overdue");
@@ -37,7 +37,9 @@ export function ServiceAlertCard({ reminders, vehicles }: { reminders: Reminder[
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold uppercase tracking-wider text-clay">{isOverdue ? "Needs Attention" : "Coming Soon"}</p>
-          <h2 className="mt-1 text-2xl font-bold capitalize">{mainReminder.serviceType}</h2>
+          <h2 className="mt-1 text-2xl font-bold capitalize">
+            {getServiceLabel(mainReminder.serviceType, mainReminder.customServiceName)}
+          </h2>
           <p className="mt-2 text-sm text-ink/70 dark:text-white/70">
             {getVehicleName(vehicles, mainReminder.vehicleId)} is due at {formatMileage(mainReminder.dueMileage)} km or {formatDate(mainReminder.dueDate)}.
           </p>

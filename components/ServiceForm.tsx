@@ -9,6 +9,8 @@ import { serviceTypes, type ServiceType, type Vehicle } from "@/lib/types";
 export function ServiceForm({ userId, vehicles }: { userId: string | null; vehicles: Vehicle[] }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
+  const [serviceType, setServiceType] = useState<ServiceType>("engine oil");
+  const [customServiceName, setCustomServiceName] = useState("");
   const [isPending, startTransition] = useTransition();
   const today = new Date().toISOString().slice(0, 10);
 
@@ -31,12 +33,39 @@ export function ServiceForm({ userId, vehicles }: { userId: string | null; vehic
       service_date: String(formData.get("date") ?? today),
       mileage: Number(formData.get("mileage") ?? 0),
       service_type: String(formData.get("serviceType") ?? "engine oil") as ServiceType,
+      custom_service_name: String(formData.get("customServiceName") ?? "").trim(),
       cost: Number(formData.get("cost") ?? 0),
       shop_name: String(formData.get("shopName") ?? ""),
       notes: String(formData.get("notes") ?? "")
     };
 
     startTransition(async () => {
+      if (payload.service_type === "other") {
+        const cleanCustomName = payload.custom_service_name.trim();
+
+        if (!cleanCustomName) {
+          setMessage("Please name this custom service.");
+          return;
+        }
+
+        const scheduleResult = await client.from("service_intervals").upsert(
+          {
+            user_id: userId,
+            vehicle_id: payload.vehicle_id,
+            service_type: "other",
+            custom_service_name: cleanCustomName,
+            interval_mileage: Number(formData.get("customIntervalMileage") ?? 5000),
+            interval_months: Number(formData.get("customIntervalMonths") ?? 6)
+          },
+          { onConflict: "vehicle_id,service_type,custom_service_key" }
+        );
+
+        if (scheduleResult.error) {
+          setMessage(scheduleResult.error.message);
+          return;
+        }
+      }
+
       const result = await client.from("service_records").insert(payload);
 
       if (result.error) {
@@ -90,7 +119,12 @@ export function ServiceForm({ userId, vehicles }: { userId: string | null; vehic
       </div>
       <label className="block">
         <span className="mb-2 block font-semibold">Service Type</span>
-        <select className="field" name="serviceType" defaultValue="engine oil">
+        <select
+          className="field"
+          name="serviceType"
+          value={serviceType}
+          onChange={(event) => setServiceType(event.target.value as ServiceType)}
+        >
           {serviceTypes.map((type) => (
             <option key={type} value={type}>
               {type}
@@ -98,6 +132,37 @@ export function ServiceForm({ userId, vehicles }: { userId: string | null; vehic
           ))}
         </select>
       </label>
+      {serviceType === "other" && (
+        <div className="rounded-3xl border border-moss/15 bg-mist/70 p-4 dark:border-white/10 dark:bg-white/10">
+          <label className="block">
+            <span className="mb-2 block font-semibold">Custom Service Name</span>
+            <input
+              className="field"
+              name="customServiceName"
+              placeholder="Example: wheel bearing, alignment, wiring"
+              value={customServiceName}
+              onChange={(event) => setCustomServiceName(event.target.value)}
+              required
+            />
+            <span className="mt-2 block text-sm text-ink/55 dark:text-white/55">
+              This creates its own service reminder name, not just “other”.
+            </span>
+          </label>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Remind every mileage</span>
+              <input className="field" name="customIntervalMileage" type="number" min={1} defaultValue={5000} required />
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Or every months</span>
+              <input className="field" name="customIntervalMonths" type="number" min={1} defaultValue={6} required />
+            </label>
+          </div>
+          <p className="mt-3 text-sm font-semibold text-moss dark:text-sage">
+            Example: {customServiceName.trim() || "Custom service"} will get its own next-service schedule.
+          </p>
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="mb-2 flex items-center gap-2 font-semibold"><ReceiptText size={18} /> Cost</span>
