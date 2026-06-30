@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { History, PlusCircle, ReceiptText, WalletCards } from "lucide-react";
+import { DemoModeBanner } from "@/components/DemoModeBanner";
 import { PageFrame } from "@/components/PageFrame";
 import { ServiceAlertCard } from "@/components/ServiceAlertCard";
 import { StatCard } from "@/components/StatCard";
@@ -8,21 +9,26 @@ import { getAppData } from "@/lib/data";
 import { formatCurrency, getTotalCost } from "@/lib/utils";
 
 export default async function DashboardPage() {
-  const { vehicles, records, reminders, isDemo } = await getAppData();
+  const { profile, vehicles, records, reminders, isDemo } = await getAppData();
 
   return (
     <PageFrame>
       <section className="mb-6">
         <p className="text-sm font-bold uppercase tracking-wider text-moss">Dashboard</p>
-        <h1 className="section-title mt-1">Your vehicle care, made simple.</h1>
-        {isDemo && <p className="mt-2 text-sm font-semibold text-clay">Demo data shown. Login to see your real records.</p>}
+        <h1 className="section-title mt-1">{isDemo ? "See how Service Saja works." : `Welcome back, ${profile.fullName}.`}</h1>
+        <p className="theme-muted mt-2 text-sm">
+          {isDemo
+            ? "This sample dashboard uses simple example vehicles, reminders, and costs."
+            : "Your vehicle care, made simple."}
+        </p>
       </section>
+      {isDemo && <DemoModeBanner />}
       <div className="mb-5">
         <ServiceAlertCard reminders={reminders} vehicles={vehicles} />
       </div>
       <div className="grid gap-4 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-xl font-bold">My Vehicles</h2>
             <Link href="/vehicles/new" className="large-button bg-moss text-white">
               <PlusCircle size={20} /> Add

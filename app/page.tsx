@@ -19,7 +19,7 @@ export default function LandingPage() {
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link href="/dashboard" className="large-button bg-moss text-white">
-            Open Dashboard <ArrowRight size={20} />
+            Try Sample Dashboard <ArrowRight size={20} />
           </Link>
           <Link href="/service/new" className="large-button secondary-button">
             Add Service

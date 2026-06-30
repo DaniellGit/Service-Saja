@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
-import { mockProfile, mockReminders, mockServiceRecords, mockVehicles } from "@/lib/mock-data";
+import { mockProfile, mockReminders, mockServiceIntervals, mockServiceRecords, mockVehicles } from "@/lib/mock-data";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import type {
   DatabaseReminder,
@@ -154,7 +154,7 @@ function getDemoData(): AppData {
     vehicles: mockVehicles,
     records: mockServiceRecords,
     reminders: mockReminders,
-    intervals: [],
+    intervals: mockServiceIntervals,
     isDemo: true,
     userId: null
   };

@@ -1,29 +1,29 @@
-import type { Profile, Reminder, ServiceRecord, Vehicle } from "@/lib/types";
+import type { Profile, Reminder, ServiceInterval, ServiceRecord, Vehicle } from "@/lib/types";
 
 export const mockProfile: Profile = {
   id: "demo-user",
-  fullName: "Daniel Family",
-  email: "demo@servicelog.local"
+  fullName: "Sample Family",
+  email: "sample@servicesaja.demo"
 };
 
 export const mockVehicles: Vehicle[] = [
   {
     id: "veh-1",
     userId: "demo-user",
-    name: "Daily Scooter",
-    plateNumber: "WXY 2481",
+    name: "Example Scooter",
+    plateNumber: "ABC 1234",
     type: "Motorcycle",
-    model: "Yamaha NVX 155",
+    model: "150cc Daily Ride",
     currentMileage: 28450,
     createdAt: "2026-05-02"
   },
   {
     id: "veh-2",
     userId: "demo-user",
-    name: "Family Car",
-    plateNumber: "VBN 7742",
+    name: "Example Family Car",
+    plateNumber: "XYZ 8899",
     type: "Car",
-    model: "Perodua Myvi",
+    model: "Compact Hatchback",
     currentMileage: 62100,
     createdAt: "2026-04-18"
   }
@@ -65,6 +65,18 @@ export const mockServiceRecords: ServiceRecord[] = [
     cost: 165,
     shopName: "Hafiz Auto Care",
     notes: "Full oil service with filter."
+  },
+  {
+    id: "rec-4",
+    userId: "demo-user",
+    vehicleId: "veh-2",
+    date: "2026-06-20",
+    mileage: 61900,
+    serviceType: "other",
+    customServiceName: "Wheel alignment",
+    cost: 45,
+    shopName: "City Tyre Shop",
+    notes: "Custom service example with its own reminder schedule."
   }
 ];
 
@@ -81,8 +93,8 @@ export const mockReminders: Reminder[] = [
   {
     id: "rem-2",
     vehicleId: "veh-2",
-    serviceType: "tire",
-    customServiceName: "",
+    serviceType: "other",
+    customServiceName: "Wheel alignment",
     dueMileage: 62000,
     dueDate: "2026-06-25",
     status: "overdue"
@@ -95,5 +107,17 @@ export const mockReminders: Reminder[] = [
     dueMileage: 27500,
     dueDate: "2026-06-12",
     status: "completed"
+  }
+];
+
+export const mockServiceIntervals: ServiceInterval[] = [
+  {
+    id: "int-1",
+    userId: "demo-user",
+    vehicleId: "veh-2",
+    serviceType: "other",
+    customServiceName: "Wheel alignment",
+    intervalMileage: 10000,
+    intervalMonths: 6
   }
 ];
