@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --page-bg: #f7f3ea;
+  --page-fg: #18211f;
+  --surface: rgba(255, 253, 248, 0.92);
+  --surface-strong: #fffdf8;
+  --border-soft: rgba(255, 255, 255, 0.7);
+  --muted: rgba(24, 33, 31, 0.65);
+  --placeholder: rgba(24, 33, 31, 0.42);
+  --field-bg: rgba(255, 255, 255, 0.92);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --page-bg: #101513;
+  --page-fg: #f7f3ea;
+  --surface: rgba(25, 33, 30, 0.86);
+  --surface-strong: #17201d;
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --muted: rgba(247, 243, 234, 0.68);
+  --placeholder: rgba(247, 243, 234, 0.46);
+  --field-bg: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(138, 169, 155, 0.2), transparent 38%),
+    radial-gradient(circle at top right, rgba(197, 111, 67, 0.14), transparent 30%),
+    var(--page-bg);
+  color: var(--page-fg);
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+html[data-theme="dark"] body {
+  background:
+    linear-gradient(135deg, rgba(138, 169, 155, 0.13), transparent 38%),
+    radial-gradient(circle at top right, rgba(197, 111, 67, 0.12), transparent 30%),
+    var(--page-bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+
+select option {
+  color: #18211f;
+  background: #fffdf8;
+}
+
+html[data-theme="dark"] select option {
+  color: #f7f3ea;
+  background: #17201d;
+}
+
+.page-shell {
+  @apply mx-auto min-h-screen w-full max-w-5xl px-4 pb-28 pt-5 sm:px-6 lg:px-8;
+}
+
+.section-title {
+  @apply font-display text-2xl font-bold text-ink dark:text-linen;
+}
+
+.soft-card {
+  background: var(--surface);
+  border-color: var(--border-soft);
+  @apply rounded-2xl border p-4 shadow-soft backdrop-blur;
+}
+
+.large-button {
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 py-3 text-base font-semibold transition hover:-translate-y-0.5 active:scale-[0.98];
+}
+
+.secondary-button {
+  @apply border border-mist bg-white text-moss dark:border-white/10 dark:bg-white/10 dark:text-linen;
+}
+
+.danger-button {
+  @apply border border-red-100 bg-red-50 text-red-700 dark:border-red-400/25 dark:bg-red-500/15 dark:text-red-100;
+}
+
+.field {
+  background: var(--field-bg);
+  @apply min-h-12 w-full rounded-xl border border-mist px-4 text-base text-ink outline-none transition focus:border-moss focus:ring-4 focus:ring-sage/20 dark:border-white/10 dark:text-linen;
+}
+
+.field[type="date"] {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] .field[type="date"] {
+  color-scheme: dark;
+}
+
+.muted-text {
+  color: var(--muted);
+}
+
+.theme-muted {
+  @apply text-ink/65 dark:text-white/65;
+}
+
+.theme-subtle {
+  @apply text-ink/55 dark:text-white/55;
+}

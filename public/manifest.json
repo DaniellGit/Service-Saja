@@ -1,0 +1,17 @@
+{
+  "name": "Service Saja",
+  "short_name": "Service Saja",
+  "description": "Track vehicle service records and reminders.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f3ea",
+  "theme_color": "#315a4f",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
